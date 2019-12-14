@@ -1,0 +1,96 @@
+@media (min-width: 768px) {
+  .modal-xl {
+    width: 90%;
+   max-width:1200px;
+  }
+  .js-plotly-plot,
+  .plot-container {
+            height: 41vh
+  }
+}
+
+h2 {
+    font-size: 2.5em;
+    margin-top: 0px;
+    text-align: center;
+}
+h3 {
+    font-size: 1.8em;
+    margin-bottom: 0px;
+    margin-top: 5px;
+}
+
+h4 {
+    font-size: 1.4em;
+}
+h5{
+    font-style: italic;
+    font-size: 1.1em;
+}
+
+body {
+    height: 100%;
+    overflow: auto;
+    }
+
+form {
+    background-color: rgb(252,252,252);
+    background-color: rgba(252,252,252,.5);
+    border-color:rgb(50,50,50);
+    border-color: rgba(50,50,50,.5);
+    border-style: solid;
+    border-radius: 1px;
+    border-width: 1px;
+    min-height:auto;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.flex-box{
+  display: flex;
+  justify-content: flex-start;
+  flex-flow:row wrap;
+}
+
+   .flex-box>* {
+       flex: 1 0 50%;
+       text-align: center;
+      }
+
+.btn {
+    margin: 5px;
+    padding: 4px 6px;
+    font-size: .9em;
+    display: inline-block;
+}
+
+.form-control{
+  margin: 5px;
+  width:97%;
+  }
+
+.column {
+    float: left;
+    width: 33.33%;
+    column-gap: 50px;
+
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.loading {
+  padding: 12.5%;
+}
+.narrative-info-box-number{
+  font-weight: bold;
+  padding-left: 5px;
+}
+
+#NarrativeInformation{
+  margin-left: 40px;
+  }
