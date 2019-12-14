@@ -1,0 +1,406 @@
+<head>
+    <title>Narravtive Status</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="jquery-ui.css" rel="stylesheet">
+    <link href="dropdown.css" rel="stylesheet">
+	<style>
+		.row {
+			margin: 5px;
+		}
+		h2 {
+			margin-top: 30px;
+			margin-left: 20px;
+		}
+		form {
+		    min-height: 20px;
+		    padding: 19px;
+		    margin-bottom: 20px;
+		    background-color: rgb(235,235,235);
+		    border: 1px solid;
+		    border-radius: 3px
+
+		}
+	</style>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="jquery.min.js"></script>
+    <script src="jquery-ui.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">Home</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <!-- <li class=""><a href="#">Characters</a></li>
+          <li class="active"><a href="#">Characters Graph</a></li>
+          <li><a href="events.html">Events</a></li>
+          <li><a href="locations.html">Locations</a></li>
+          <li class=""><a href="texts.html">Career</a></li> -->
+          <li class="dropdown active">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Visualizations <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Location-Character Graphs</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="characters-force.html">Force Directed</a></li>
+                    <li><a href="characters-bipart.html">Bipartite</a></li>
+                  </ul>
+                </li>
+                <li><a href="char-char-force.html">Character-Character Graphs</a></li>
+                <li><a href="characters-graph.html">Character-Event Graphs</a></li>
+                <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Heatmaps</a>
+                  <ul class="dropdown-menu">
+                    <li><a href="http://faulkner.iath.virginia.edu/media/resources/DISPLAYS/HeatmapsHP.html">Spatial</a></li>
+                    <li><a href="http://faulkner.iath.virginia.edu/media/resources/DISPLAYS/TemporalHeatmapsHP.html">Temporal</a></li>
+                  </ul>
+                </li>
+		</ul>
+	</li>
+        </ul>
+
+	  <ul class="nav navbar-nav">
+	</ul>
+
+	  <ul class="nav navbar-nav navbar-right">
+		<li class="dropdown dropdown-left ">
+		        <a class="dropdown-toggle" data-toggle="dropdown" href="#">About
+		        <span class="caret"></span></a>
+		        <ul class="dropdown-menu">
+					<div id="about" style="padding-left:8px;padding-right:20px">
+						About the graph.
+					</div>
+
+		        </ul>
+		</li>
+	<li class="dropdown dropdown-left ">
+	        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Demo
+	        <span class="caret"></span></a>
+	        <ul class="dropdown-menu">
+				<div id="demo" style="padding-left:8px;padding-right:20px">
+				</div>
+
+	        </ul>
+	</li>
+		<li class="dropdown dropdown-left ">
+		        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Legend
+		        <span class="caret"></span></a>
+		        <ul class="dropdown-menu">
+					<div id="legend" style="padding-left:8px">
+
+					 </div>
+		        </ul>
+		</li>
+	</ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+    <!-- <div class="navbar navbar-inverse navbar-fixed-top" role="navigation"> -->
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Home</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Events</a></li>
+            <li ><a href="characters.html">Characters</a></li>
+            <li><a href="locations.html">Locations</a></li>
+            <li class=""><a href="texts.html">Career</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container-fluid">
+       <h2>Events Data</h2>
+       <div class="row">
+         <div class="col-sm-4">
+           <form id="search">
+             <div class="form-group shiny-input-container">
+               <label class="control-label" for="Novel">Select Novel :</label>
+               <div id="select_text_titles">
+				</div>
+			</div>
+			<div id="input_era" class="shiny-html-output shiny-bound-output"><div id="era" class="form-group shiny-input-checkboxgroup shiny-input-container shiny-bound-input">
+			  <label class="control-label" for="era">Era</label>
+			  <div class="shiny-options-group" id="eras">
+			  </div>
+			</div></div>
+		 </form>
+		</div>
+         <div class="col-sm-8">
+			 <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+		</div>
+	</div>
+</div>
+
+<script>
+   var narrated = {};
+   var texts = {};
+   var selected_text = 'FD';
+
+   function load_texts() {
+     $.ajax({
+          type: 'GET',
+          url: '/sinatra/texts',
+          // dataType:'json',
+          success: function (data) {
+             var str = '<select name="text" id="text">';
+             var era = {};
+             $.each(data, function(index, value) {
+               texts[value['code']] = {'title' : value['title']};
+               if (value['title'] != null) {
+                 str += '<option value="'+value['code']+'">'+value['title'].substr(0, 50)+'</option>';
+                 era[value['era']] = value['era'];
+               }
+             });
+             $('#select_text_titles').append(str+'</select>');
+
+         }
+       });
+       return true;
+   }
+
+ function show_graph(text='FD', select_eras) {
+   selected_text = text;
+   var e = '';
+
+   if (select_eras != null) {
+     e ='&era='+select_eras;
+     // e['era'] = select_eras;
+   }
+     $.ajax({
+       type: 'GET',
+     url: '/sinatra/?text='+text+e, //+'&params='+encodeURIComponent(JSON.stringify(e)),
+       dataType:'json',
+       success: function (data) {
+       var nx = [];
+       var ny= [];
+       var nx1 = [];
+       var ny1= [];
+       var ntext = [];
+       var ns = [];
+       var ncx = [];
+       var ncy= [];
+       var nctext = [];
+       var ncs = [];
+       var rx = [];
+       var ry = [];
+       var rtext = [];
+       var rs = [];
+       var tx = [];
+       var ty= [];
+       var ttext = [];
+       var ts = [];
+       var era = {};
+
+       var hz_lines_x = [];
+       var hz_lines_y = [];
+       var hz_lines_style = [];
+     $.each(data["results"], function(index, value) {
+       if (value['naerrative_status'] == 'Narrated') {
+         nx.push(parseFloat(value['order_in_p']));
+         ny.push(value['chronological']);
+         ntext.push(value['first_words']);
+         ntext.push(value['first_words']);
+         // nw.push(12);
+         if (parseInt(value['page_end']) > parseInt(value['order_in_p'])) {
+           // nw.push((parseInt(value['page_end'])-parseInt(value['order_in_p']))*40);
+           hz_lines_x.push([value['order_in_p'], value['page_end']]);
+           hz_lines_y.push([value['chronological'], value['chronological']]);
+           hz_lines_style.push([value['first_words'], 'orange']);
+         } else {
+           // nw.push(1); //(parseFloat(value['page_end'])-parseFloat(value['order_in_p']))*12);
+         }
+         // nw.push(12);
+         nx1.push(value['order_in_p']);
+         if(parseInt(value['page_end']) > parseInt(value['order_in_p'])) {
+           nx1.push(value['page_end']);
+         } else {
+           nx1.push(value['order_in_p']);
+         }
+         ns.push('circle');
+         ns.push('circle-open');
+         ny1.push(value['chronological']);
+         // ny1.push(value['chronological']);
+         ny1.push(value['chronological']);
+       }
+       if (value['naerrative_status'] == 'Narrated+Consciousness') {
+         ncx.push(parseFloat(value['order_in_p']));
+         ncy.push(value['chronological']);
+         nctext.push(value['first_words']);
+         nctext.push(value['first_words']);
+         if (parseInt(value['page_end']) > parseInt(value['order_in_p'])) {
+           // nw.push((parseInt(value['page_end'])-parseInt(value['order_in_p']))*40);
+           hz_lines_x.push([value['order_in_p'], value['page_end']]);
+           hz_lines_y.push([value['chronological'], value['chronological']]);
+           hz_lines_style.push([value['first_words'], 'green']);
+         } else {
+           // nw.push(1); //(parseFloat(value['page_end'])-parseFloat(value['order_in_p']))*12);
+         }
+         ncs.push('circle');
+         ncs.push('circle-open');
+
+       }
+       if (value['naerrative_status'] == 'Remembered') {
+         // rx.push(parseFloat(value['order_in_p']));
+         // ry.push(value['chronological']);
+
+         rx.push(value['order_in_p']);
+         if(parseInt(value['page_end']) > parseInt(value['order_in_p'])) {
+           rx.push(value['page_end']);
+         } else {
+           rx.push(value['order_in_p']);
+         }
+         rs.push('circle');
+         rs.push('circle-open');
+         ry.push(value['chronological']);
+         ry.push(value['chronological']);
+
+         rtext.push(value['first_words']);
+         rtext.push(value['first_words']);
+         if (parseInt(value['page_end']) > parseInt(value['order_in_p'])) {
+           hz_lines_x.push([value['order_in_p'], value['page_end']]);
+           hz_lines_y.push([value['chronological'], value['chronological']]);
+           hz_lines_style.push([value['first_words'], 'aqua']);
+         }
+         // rs.push('circle');
+         // rs.push('circle-open');
+       }
+       if (value['naerrative_status'] == 'Told') {
+
+         tx.push(value['order_in_p']);
+         if(parseInt(value['page_end']) > parseInt(value['order_in_p'])) {
+           tx.push(value['page_end']);
+         } else {
+           tx.push(value['order_in_p']);
+         }
+         ts.push('circle');
+         ts.push('circle-open');
+         ty.push(value['chronological']);
+         ty.push(value['chronological']);
+
+         ttext.push(value['first_words']);
+         ttext.push(value['first_words']);
+         if (parseInt(value['page_end']) > parseInt(value['order_in_p'])) {
+           hz_lines_x.push([value['order_in_p'], value['page_end']]);
+           hz_lines_y.push([value['chronological'], value['chronological']]);
+           hz_lines_style.push([value['first_words'], 'purple']);
+         }
+       }
+
+     era[value['era']] = value['era'];
+   });
+   var era_str = '';
+   $.each(era, function(i,v) {
+     if (v != null) {
+       era_str += '<div class="checkbox" > <label> <input type="checkbox" class="cb_era" name="era" value="'+v+'" checked="checked"> <span>'+v+'</span></label> </div></div>';
+     }
+   })
+   if(select_eras == null) {
+     $('#eras').html('');
+     $('#eras').append(era_str);
+   }
+   console.log('nx1')
+   console.log(nx1);
+
+     var narrated_consciousness = {
+       x: ncx,
+       y: ncy,
+       mode: 'markers',
+       name: 'Narrated+Consciousness',
+       text: nctext,
+         marker: { color: 'green', size: 10, symbol: ncs }
+     }
+     var narrated = {
+       // x: nx,
+       // y: ny,
+       x: nx1,
+       y: ny1,
+       mode: 'markers',
+       name: 'Narrated',
+       text: ntext,
+         marker: { color: 'orange', size: 10, symbol: ns }
+     }
+     var remembered = {
+       x: rx,
+       y: ry,
+       mode: 'markers',
+       name: 'Remembered',
+       text: rtext,
+         marker: { color: 'aqua', size: 10, symbol: rs }
+     }
+     var told = {
+       x: tx,
+       y: ty,
+       mode: 'markers',
+       name: 'Told',
+       text: ttext,
+         marker: { color: 'purple', size: 10, symbol: ts }
+     }
+     var data = [narrated, narrated_consciousness, remembered, told];
+     $.each(hz_lines_x, function(i,v) {
+       data.push({x: hz_lines_x[i], y: hz_lines_y[i], mode: 'line', text: hz_lines_style[i][0], line: {
+         color: hz_lines_style[i][1], width: 3}, showlegend: false});
+     })
+     var xmax = Math.max([Math.max(nx),Math.max(ncx),Math.max(rx),Math.max(tx)]);
+     var ymax = Math.max([Math.max(ny),Math.max(ncy),Math.max(ry),Math.max(ty)]);
+     var m = Math.max(nx);
+     m = parseFloat(nx.sort()[nx.length-1]);
+       var layout = {
+         xaxis: {
+           range: [ 0.75, xmax ],
+       title: 'Order within page'
+         },
+         yaxis: {
+           range: [0, ymax],
+       title: 'Chronological Order'
+         },
+         title:'Narrative Status',
+     plot_bgcolor: 'rgb(235, 235, 235)',
+     hovermode: 'closest'
+       };
+
+       Plotly.newPlot('myDiv', data, layout);
+
+     }
+   })
+ }
+ $(function() {
+   // Handler for .ready() called.
+   load_texts();
+   show_graph('FD', null);
+   $(document).on('change', '#text', function(){
+     show_graph($(this).val(), null);
+   })
+   $(document).on('change', 'input', function(){
+     console.log($('input:checked').val());
+     var e = ''
+     $('input:checked').each(function(){
+       e += $(this).val()+',';
+     })
+     show_graph(selected_text, e);
+   })
+     /* attach a submit handler to the form */
+
+  });
+
+ </script>
+</body>
