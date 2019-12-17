@@ -3,10 +3,10 @@
     <title>Narrative Structure Analyis</title>
 
     <!-- Bootstrap core CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link href="http://hero.village.virginia.edu/~rwb3y/faulkner/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="http://hero.village.virginia.edu/~rwb3y/faulkner/jquery-ui.css" rel="stylesheet">
-    <link href="http://hero.village.virginia.edu/~rwb3y/faulkner/dropdown.css" rel="stylesheet">
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+    <link href="bootstrap.css" rel="stylesheet">
+    <link href="jquery-ui.css" rel="stylesheet">
+    <link href="dropdown.css" rel="stylesheet">
 
 <!-- Additional CSS for flexbox and plotly -->
     <link href="narrativeanalysis.css" rel="stylesheet">
@@ -14,9 +14,9 @@
   <!-- Plotly.js -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://momentjs.com/downloads/moment.js"></script>
-  <script src="http://hero.village.virginia.edu/~rwb3y/faulkner/jquery.min.js"></script>
-  <script src="http://hero.village.virginia.edu/~rwb3y/faulkner/jquery-ui.min.js"></script>
-  <script src="http://hero.village.virginia.edu/~rwb3y/faulkner/bootstrap/js/bootstrap.min.js"></script></head>
+  <script src="jquery.min.js"></script>
+  <script src="jquery-ui.min.js"></script>
+  <script src="bootstrap.min.js"></script></head>
 
 <body>
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -111,17 +111,18 @@
 
 <div class="container-fluid">
 <div class="col-md-2">
-	<form id="search">
+	<form id="search" class="input-form">
     <div class = "form-row">
       <p>Select Text:</p>
 		  </div>
-      <div id= addChart></div>
+      <div id= addChart class="chart-select"></div>
       <div class = "form-row">
         <button id= "btnAddChart" type="button" class="btn btn-primary" onclick= "addChartSelect()">Add Chart</button>
      </div>
      <hr>
      <div class="form-row">
-     	<div id="collapse" style="display:none">
+       <div class= "collapse-container">
+      <div id="collapse" style="display:none">
          <p><span><b>Overview:</b> The charts map the order of events (story/fabula) versus the page numbers (plot/syuzhet).</span></p>
          <p><span><b>Rank Order:</b> The order of events from first to last. Does not show the relative distance between events based on time.</span>
          <span><p style= "padding-left: 5px"><i>Narrative Status:</i> Indicates how the event was conveyed.</p></span></p>
@@ -131,6 +132,7 @@
          <p><span>For more information see <a href="The_Art_of_Faulkner.html">Detailed Guide.</a></span></p>
        </div><a href="#collapse" id="help" class="nav-toggle">Help</a>
          </div>
+       </div>
 
   </form>
 
@@ -208,7 +210,7 @@
 
 //Stores the titles for the selection box after AJAX request for quick use later.
 var texttitles = {};
-//global counters for the "add chart button". By default this is set to 0 to 3,
+//global counters for the "add chart button". By default this is set to 0 to 4,
 //generating four possible charts
 addButtonCounter = 0;
 const maxChartCount = 4;
@@ -245,11 +247,13 @@ function addChartSelect() {
 
       function refreshLayout(previousChart){
             var i = previousChart
-            var restyleChart = document.getElementById('quadrant'+(previousChart-1))
+            if (i-1 >0){
+            var restyleChart = document.getElementById('quadrant'+(i-1))
             var restyleLayout = restyleChart.layout;
             var restyleData = restyleChart.data;
             Plotly.newPlot(restyleChart, restyleData, restyleLayout)
           }
+            }
 
       function addChartPanel(newChart){
             var i = newChart
@@ -281,7 +285,6 @@ function addChartSelect() {
 
 function addSelectionPanel (newChart){
   var i = newChart
-
         if (i >= maxChartCount) {
           document.getElementById("btnAddChart").disabled = true;
         }
@@ -290,12 +293,12 @@ var addChart = document.getElementById("addChart")
 
 var newSelectPanel = document.createElement("ROW");
   newSelectPanel.style.border = "none";
-  newSelectPanel.name= "inputNode" +i;
   newSelectPanel.className = "form-row";
   newSelectPanel.style.padding= "0px";
 
 var inputSelectionBox = document.createElement("DIV")
   inputSelectionBox.id="select_text_titles"+i;
+  inputSelectionBox.className = "select_text";
 
 var btnRankOrder = document.createElement("INPUT");
   btnRankOrder.type = "button";
@@ -344,7 +347,6 @@ var btnRemove = document.createElement("INPUT");
       }
   };
 
-
 newSelectPanel.appendChild(inputSelectionBox);
 newSelectPanel.appendChild(btnRankOrder);
 newSelectPanel.appendChild(btnDateOrder);
@@ -358,7 +360,7 @@ addTitles(texttitles, newChart)
   function addTitles(texttitles, newChart) {
     //sets the variables for input
     var i = newChart
-    var str = '<select class="form-control" name="text" id="text'+i+'">';
+    var str = '<select class="form-control" name="text" id='+i+'>';
     var addSelectText = '#select_text_titles'+i
     //populates the input box with field codes and values
     $.each(texttitles, function(index, value) {
@@ -480,12 +482,12 @@ $('#avg_nar_changes').text(Number((stat_change/totalpages).toFixed(2)));
 begin_date= begin_date.map(date => moment(date, "YYYY-MM-DD"))
 
 var early_date = findEarliestDate(begin_date)
-early_date = moment(early_date).format('MM-DD-YYYY');
+//;
 
 end_date = end_date.map(date => moment(date, "YYYY-MM-DD"))
 
 var late_date = findLastDate(end_date)
-late_date = moment(late_date).format('MM-DD-YYYY')
+//
 
 var total_time_dif = moment(late_date).diff(moment(early_date), 'years');
 var totalPeriod= 'years'
@@ -505,7 +507,8 @@ freq_start_date = moment(freq_start_date).format('MM-DD-YYYY')
 var freq_end_date = mode(end_date)
 freq_end_date = moment(freq_end_date).format('MM-DD-YYYY')
 
-
+early_date = moment(early_date).format('MM-DD-YYYY')
+late_date = moment(late_date).format('MM-DD-YYYY')
 
 function mode(array)
 {
@@ -934,11 +937,12 @@ var data2 = [datelegendtitle,narrated_date_begin, narrated_date_end];
 
   			var xmax = Math.max([Math.max(nx),Math.max(ncx),Math.max(rx),Math.max(tx),Math.max(hx)]);
   			var ymax = Math.max([Math.max(ny),Math.max(ncy),Math.max(ry),Math.max(ty),Math.max(hy)]);
-
+        //var xmin = Math.min([Math.min(nx),Math.min(ncx),Math.min(rx),Math.min(tx),Math.min(hx)]);
   	  	  var layout = {
   	  	    xaxis: {
   	  	      range: [0, xmax],
   				    title: 'Page Number of Event',
+               zeroline: false,
               },
   	  	    yaxis: {
               range: [0, ymax],
@@ -967,16 +971,22 @@ var data2 = [datelegendtitle,narrated_date_begin, narrated_date_end];
           var config = {
             responsive:true,
             toImageButtonOptions: {
-              format: 'png', // one of png, svg, jpeg, webp
+              format: 'svg', // one of png, svg, jpeg, webp
               filename: 'DY_narrative analysis '+texttitle+" (Rank Order)",
+              height: 600,
+              width: 1200,
+              scale:10,
             },
             displaylogo:false,
           };
           var config2 = {
             responsive:true,
             toImageButtonOptions: {
-              format: 'png', // one of png, svg, jpeg, webp
+              format: 'svg', // one of png, svg, jpeg, webp
               filename: 'DY_narrative analysis '+texttitle+" (Date Order)",
+              height: 600,
+              width: 1200,
+              scale:10,
             },
             displaylogo:false,
           };
@@ -988,16 +998,17 @@ var data2 = [datelegendtitle,narrated_date_begin, narrated_date_end];
 
           $(document).on('click',btnRankOrder, function(){
 
-          Plotly.newPlot(quadrant, data, layout, config);
+          Plotly.react(quadrant, data, layout, config);
           })
 
           $(document).on('click',btnDateOrder, function(){
-            Plotly.newPlot(quadrant, data2, layout2, config2);
+            Plotly.react(quadrant, data2, layout2, config2);
            })
 
-          $(document).on('change', loadText, function(){
-           show_graph($(this).val(), currentChart);
-            })
+          // $(document).on('change', loadText, function(){
+          //   Plotly.purge(quadrant)
+          //  show_graph($(this).val(), currentChart);
+          //   })
 
             $(document).on('click',btnNarrativeModal, function(){
               loadAnalytics(tempdata)
@@ -1009,10 +1020,10 @@ var data2 = [datelegendtitle,narrated_date_begin, narrated_date_end];
 
 
 ///
-  $(function() {
+//  $(function() {
     // Handler for .ready() called.
     loadTexttitles();
-  });
+//  });
 
   $(document).ready(function () {
     $('.nav-toggle').click(function () {
@@ -1026,6 +1037,25 @@ var data2 = [datelegendtitle,narrated_date_begin, narrated_date_end];
             }
         });
     });
+    // $(document).on('change', '#text1' ,function(){
+    //   show_graph($(this).val(), 1)
+    // })
+    // $(document).on('change', '#text2' ,function(){
+    //   show_graph($(this).val(), 2)
+    // })
+    // $(document).on('change', '#text3' ,function(){
+    //   show_graph($(this).val(), 3)
+    // })
+    // $(document).on('change', '#text4' ,function(){
+    //   show_graph($(this).val(), 4)
+    // })
+
+    $('.chart-select').on('change','.form-control' , function(){
+      console.log($(this).val())
+       var quadrant = $(this).attr('id')
+       show_graph($(this).val(), quadrant)
+
+    })
 
 });
 
